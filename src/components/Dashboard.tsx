@@ -79,6 +79,7 @@ export default function Dashboard({
   });
 
   async function createAccount() {
+    //LIT PKPEthersWallet for input into signer field of `moduleItem`
     const pkpWallet = new PKPEthersWallet({
       controllerSessionSigs: sessionSigs,
       pkpPubKey: currentAccount.publicKey,
@@ -165,13 +166,14 @@ export default function Dashboard({
       //not sure where this comes from or how it's obtained
       //would represent the inviter's did based on their mpc wallet
       const inviter = '0x8071f6F971B438f7c0EA72C950430EE7655faBCe';
-      const addy = await smartAccount?.getAccountAddress();
+      
+      const invitee = await smartAccount?.getAccountAddress();
       const data = await composeClient.executeQuery<DataResult>(`
         mutation {
           createQualifiedInvite(input: {
             content: {
               inviter: "did:pkh:eip155:1:${inviter}"
-              invitee: "did:pkh:eip155:1:${addy}"
+              invitee: "did:pkh:eip155:1:${invitee}"
               qualified: true
             }
           }) 
