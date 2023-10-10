@@ -576,6 +576,8 @@ p {
   background-color: var(--primary-light);
   color: var(--primary-dark);
   margin-top: 1.5rem;
+  overflow-wrap: break-word;
+  word-break: break-all;
 }
 
 .details-card p {
