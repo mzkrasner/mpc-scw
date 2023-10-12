@@ -8,6 +8,7 @@ import {
   registerWebAuthn,
   signInWithDiscord,
   signInWithGoogle,
+  authenticateWithGoogle
 } from '../utils/lit';
 import { AuthMethodType } from '@lit-protocol/constants';
 import SignUpMethods from '../components/SignUpMethods';

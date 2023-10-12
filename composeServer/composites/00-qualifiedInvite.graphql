@@ -1,0 +1,26 @@
+# model instances will always be controlled by Collabland
+type QualifiedInvite
+    @createModel(accountRelation: LIST, description: "A qualified invite")
+    @createIndex(fields: [{ path: "inviter" }])
+    @createIndex(fields: [{ path: "invitee" }])
+    @createIndex(fields: [{ path: "created" }]) 
+    @createIndex(fields: [{ path: "qualified" }]){
+    author: DID! @documentAccount # this is simply auto-filled and will always be the same (Collabland DID)
+    inviter: DID! @accountReference
+    invitee: DID! @accountReference
+    qualified: Boolean!
+    created: DateTime
+}
+
+# inviter and invitee fields could alternatively be strings that point to each user's affiliate ID 
+# (as long as it never changes)
+
+###
+
+# if the discount calculation is based on the number of successful referrals, we'd be able to
+# easily run a single query against the QualifiedInvite index, filtering based on inviter and qualified fields
+
+###
+
+# proof of humanhood is inherent because we only care about instances created by 
+# Collabland DID (and the app only generates instances once the on-chain behavior occurs)

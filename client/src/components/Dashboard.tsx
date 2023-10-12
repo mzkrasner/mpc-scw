@@ -1,6 +1,6 @@
 import { AuthMethod, IRelayPKP, SessionSigs } from '@lit-protocol/types';
 import { Wallet, providers, ethers } from 'ethers';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { PKPEthersWallet } from '@lit-protocol/pkp-ethers';
 import { useRouter } from 'next/router';
 import { useDisconnect } from 'wagmi';
@@ -46,7 +46,7 @@ type DataResult = {
       };
     };
   };
-}
+};
 
 export default function Dashboard({
   currentAccount,
@@ -59,6 +59,7 @@ export default function Dashboard({
   const [verified, setVerified] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [smartAccount, setSmartAccount] = useState<BiconomySmartAccountV2>();
+  const [worker, setWorker] = useState(null);
   const [error, setError] = useState<Error>();
   const clients = useCeramicContext();
   const { ceramic, composeClient } = clients;
@@ -108,8 +109,23 @@ export default function Dashboard({
     smartAccount = biconomySmartAccount;
     console.log('address: ', await biconomySmartAccount.getAccountAddress());
     setSmartAccount(biconomySmartAccount);
-    return biconomySmartAccount;
-  }
+    const response = await fetch('http://localhost:3001/compose', {
+      method: "POST", 
+      mode: "cors", 
+      cache: "no-cache", 
+      headers: {
+        "Content-Type": "application/json",
+      },
+      redirect: "follow", 
+      referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+      body: JSON.stringify({
+        inviter: '0x8071f6F971B438f7c0EA72C950430EE7655faBCe',
+        invitee: address,
+      }),
+    });
+    const toJson = await response.json(); // parses JSON response into native JavaScript objects
+    console.log(toJson);
+}
 
   /**
    * Sign a message with current PKP
@@ -166,7 +182,7 @@ export default function Dashboard({
       //not sure where this comes from or how it's obtained
       //would represent the inviter's did based on their mpc wallet
       const inviter = '0x8071f6F971B438f7c0EA72C950430EE7655faBCe';
-      
+
       const invitee = await smartAccount?.getAccountAddress();
       const data = await composeClient.executeQuery<DataResult>(`
         mutation {
@@ -190,7 +206,7 @@ export default function Dashboard({
           }
         }
       `);
-      
+
       console.log(data);
       setResult(data.data!);
     } catch (err) {
@@ -209,6 +225,7 @@ export default function Dashboard({
     router.reload();
   }
 
+
   return (
     <div className="container">
       <div className="logout-container">
@@ -225,7 +242,7 @@ export default function Dashboard({
         <p>Test out your wallet by signing this message:</p>
         <p className="message-card__prompt">{message}</p>
         <button
-          onClick={signMessageWithPKP}
+            onClick={signMessageWithPKP}
           disabled={loading}
           className={`btn ${
             signature ? (verified ? 'btn--success' : 'btn--error') : ''
@@ -258,9 +275,11 @@ export default function Dashboard({
               className={`btn ${
                 signature ? (verified ? 'btn--success' : 'btn--error') : ''
               } ${loading && 'btn--loading'}`}
-            ><span>Create Qualified </span></button>
+            >
+              <span>Create Qualified </span>
+            </button>
             <div className="details-card">
-              <p >Result: {JSON.stringify(result)}</p>
+              <p>Result: {JSON.stringify(result)}</p>
             </div>
           </>
         )}
