@@ -9,6 +9,7 @@ type QualifiedInvite
     inviter: DID! @accountReference
     invitee: DID! @accountReference
     qualified: Boolean!
+    category: String @string(maxLength: 1000)
     created: DateTime
 }
 
