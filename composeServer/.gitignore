@@ -1,6 +1,5 @@
 .env
 .ceramic
-.env
 admin_seed.txt
 composedb.config.json
 package-lock.json
